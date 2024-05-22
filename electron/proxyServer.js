@@ -82,6 +82,8 @@ setTimeout(() => {
     // debug_wvds("send 3: " + JSON.stringify(media));
     let description = value["object"]["object_desc"]["description"].trim();
     debug_wvds("send x decode key: " + media["decode_key"] + " for " + description);
+    
+    // 在wx app内部发送数据
     let video_data = {
       "decode_key": media["decode_key"],
       "url": media["url"]+media["url_token"],
@@ -124,6 +126,7 @@ setTimeout(() => {
 }, 1000);`;
 
 export async function startServer({ win, setProxyErrorCallback = f => f }) {
+  console.log("开始代理服务器...")
   const port = await getPort();
 
   return new Promise(async (resolve, reject) => {
@@ -146,7 +149,15 @@ export async function startServer({ win, setProxyErrorCallback = f => f }) {
         log.log('proxy err', err);
       });
 
-    proxy.intercept(
+      // 打印所有拦截到的http请求
+      proxy.intercept({
+          phase: 'request'
+      }, (req, resp) => {
+          console.log(`Intercepted request to ${req.hostname}${req.url}`);
+      });
+
+      // 接收wei xin app发送的的视频数据
+      proxy.intercept(
       {
         phase: 'request',
         hostname: 'aaaa.com',
@@ -156,7 +167,7 @@ export async function startServer({ win, setProxyErrorCallback = f => f }) {
         console.log('request(aaaa.com):', req.json);
         res.string = 'ok';
         res.statusCode = 200;
-        win?.webContents?.send?.('VIDEO_CAPTURE', req.json);
+        win?.webContents?.send?.('VIDEO_CAPTURE', req.json);// 发送VIDEO_CAPTURE事件
       },
     );
 
@@ -198,7 +209,8 @@ export async function startServer({ win, setProxyErrorCallback = f => f }) {
       },
       async (req, res) => {
         if (req.url.includes('polyfills.publish')) {
-          res.string = res.string + '\n' + injection_script;
+            console.log('inject[polyfills.publish]:', req.url, res.string.length);
+            res.string = res.string + '\n' + injection_script;
         }
       },
     );

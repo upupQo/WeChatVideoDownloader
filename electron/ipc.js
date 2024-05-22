@@ -36,6 +36,7 @@ export default function initIPC() {
   });
 
   ipcMain.handle('invoke_下载视频', async (event, { url, decodeKey, savePath, description }) => {
+    console.log('开始下载视频');
     let fileName = description?.replaceAll?.(/\\|\/|:|\*|\?|"|<|>|\|/g, '') || Date.now();
 
     console.log('description:', description);

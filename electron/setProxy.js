@@ -5,6 +5,7 @@ import CONFIG from './const';
 regedit.setExternalVBSLocation(CONFIG.REGEDIT_VBS_PATH);
 
 export async function setProxy(host, port) {
+  console.log("更改本地机器代理设置...")
   if (process.platform === 'darwin') {
     const networks = await getMacAvailableNetworks();
 

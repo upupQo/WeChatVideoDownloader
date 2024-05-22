@@ -17,6 +17,7 @@ export async function installCert(checkInstalled = true) {
   mkdirp.sync(path.dirname(CONFIG.INSTALL_CERT_FLAG));
 
   if (process.platform === 'darwin') {
+    console.log('安装凭证');
     return new Promise((resolve, reject) => {
       clipboard.writeText(
         `echo "输入本地登录密码" && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "${CONFIG.CERT_PUBLIC_PATH}" &&  touch ${CONFIG.INSTALL_CERT_FLAG} && echo "安装完成"`,

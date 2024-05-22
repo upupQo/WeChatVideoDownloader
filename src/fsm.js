@@ -168,6 +168,7 @@ export default createMachine(
         ipcRenderer
           .invoke('invoke_启动服务')
           .then(() => {
+            console.log("注册视频捕获事件")
             ipcRenderer.on('VIDEO_CAPTURE', fnDealVideoCapture);
           })
           .catch(() => {
